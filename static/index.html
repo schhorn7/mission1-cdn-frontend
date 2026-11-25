@@ -264,7 +264,7 @@
             margin-bottom: 0.5rem;
           "
         >
-          Click "Stream File" to request the asset from Server #2, which
+          Click "Get File" to request the asset from Central API Server, which
           automatically routes to the closest edge node.
         </p>
 
@@ -291,7 +291,7 @@
       </div>
 
       <div class="card" id="previewCard" style="display: none">
-        <h2>Live Image Stream & Header Diagnostics</h2>
+        <h2>Get Image From Nearest Storage Server</h2>
         <p
           id="routingInfo"
           style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem"
@@ -369,7 +369,7 @@
                         <td>${f.filename}</td>
                         <td>${(f.replicas || []).map((r) => `<span class="badge" style="margin-right: 4px;">${r}</span>`).join("")}</td>
                         <td>
-                            <button onclick="testDownload('${f.id}')" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Stream File</button>
+                            <button onclick="testDownload('${f.id}')" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Get File</button>
                         </td>
                     </tr>
                 `,
@@ -401,8 +401,7 @@
         document.getElementById("previewCard").style.display = "block";
         document.getElementById("routingInfo").innerText =
           `Nearest Node Selected: ${servedBy} (${servedFrom})`;
-        document.getElementById("detectionInfo").innerText =
-          `Detection Pipeline: ${method}`;
+        document.getElementById("detectionInfo").innerText = `${method}`;
         const img = document.getElementById("previewImg");
         img.src = objectUrl;
         img.style.display = "block";
