@@ -310,12 +310,12 @@
 
     <script>
       // API Base configuration from Server #1
-      // const API_BASE = window.CENTRAL_API_URL || "http://localhost:8080";
+      const API_BASE = window.CENTRAL_API_URL || "http://localhost:8080";
       // document.getElementById("apiBaseLabel").innerText = API_BASE;
 
       // Auto Client Timezone Detection
-      // const userTimezone =
-      // Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Singapore";
+      const userTimezone =
+        Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Singapore";
       // document.getElementById("clientTimezoneBadge").innerText = userTimezone;
 
       async function fetchNodes() {
