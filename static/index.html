@@ -435,7 +435,7 @@
             const data = await res.json();
             if (res.ok) {
               alert.className = "alert alert-success";
-              alert.innerText = `Uploaded to Server #2 and replicated across: ${(data.replicas || []).join(", ")}`;
+              alert.innerText = `Uploaded to central API Server and replicated across: ${(data.replicas || []).join(", ")}`;
               alert.style.display = "block";
               fileInput.value = "";
               fetchFiles();
@@ -448,7 +448,7 @@
             alert.style.display = "block";
           } finally {
             btn.disabled = false;
-            btn.innerText = "Upload to Server #2 (Fan-Out Replicate)";
+            //btn.innerText = "Upload to Server #2 (Fan-Out Replicate)";
           }
         });
 
