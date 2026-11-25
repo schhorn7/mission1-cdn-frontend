@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server #1: CDN Web Application</title>
+    <!-- Dynamic API Configuration from Server #1 -->
+    <script src="/config.js" defer></script>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text: #0f172a;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --success: #16a34a;
+        --badge-bg: #dbeafe;
+        --badge-text: #1e40af;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        padding: 2rem 1rem;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      header {
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1rem;
+      }
+      .server-tag {
+        display: inline-block;
+        background: #dcfce7;
+        color: #15803d;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      p.subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        background: var(--card-bg);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        padding: 1.25rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .card h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #334155;
+      }
+      input[type="file"] {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+      button {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background-color: var(--primary-hover);
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 4px;
+        background-color: var(--badge-bg);
+        color: var(--badge-text);
+      }
+      .node-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .node-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background: #f1f5f9;
+        border-radius: 6px;
+      }
+      .node-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .node-meta {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.6rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.85rem;
+      }
+      th {
+        background: #f8fafc;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+      .img-preview {
+        max-width: 100%;
+        height: auto;
+        max-height: 250px;
+        border-radius: 6px;
+        margin-top: 0.5rem;
+        display: none;
+      }
+      .alert {
+        padding: 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        margin-top: 0.75rem;
+        display: none;
+      }
+      .alert-success {
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+      }
+      .alert-error {
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+      }
+      .auto-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+        padding: 0.6rem 0.9rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <!-- <div class="server-tag">SERVER #1: STANDALONE FRONTEND (Port 3000)</div> -->
+        <h1>CDN Storage Dashboard</h1>
+        <!-- <p class="subtitle">
+          Posts files to <strong>Server #2 (Central API)</strong> &bull;
+          Replicates to Storage Cluster over SFTP
+        </p> -->
+      </header>
+
+      <!-- Configuration Banner -->
+      <!-- <div class="auto-banner">
+        <div>
+          <strong>Connected to Server #2:</strong>
+          <code id="apiBaseLabel">Loading...</code>
+        </div>
+        <div>
+          <strong>Auto Client Timezone:</strong>
+          <span class="badge" id="clientTimezoneBadge">Detecting...</span>
+        </div>
+      </div> -->
+
+      <div class="grid">
+        <!-- Upload Box -->
+        <div class="card">
+          <h2>Upload Image</h2>
+          <form id="uploadForm">
+            <div class="form-group">
+              <label for="imageFile">Choose Image File:</label>
+              <input type="file" id="imageFile" accept="image/*" required />
+            </div>
+            <button type="submit" id="uploadBtn">Upload</button>
+            <div id="uploadAlert" class="alert"></div>
+          </form>
+        </div>
+
+        <!-- Active Nodes Pool -->
+        <div class="card">
+          <h2>
+            Storage Cluster Status
+            <span class="badge" id="nodeCount">0 Nodes</span>
+          </h2>
+          <div class="node-list" id="nodesContainer">
+            <p style="color: var(--text-muted); font-size: 0.9rem">
+              Connecting to Central API...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Files & Download Section -->
+      <div class="card" style="margin-bottom: 2rem">
+        <h2>Files on CDN & Automatic Geo-Routing</h2>
+        <p
+          style="
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+          "
+        >
+          Click "Stream File" to request the asset from Server #2, which
+          automatically routes to the closest edge node.
+        </p>
+
+        <table id="filesTable">
+          <thead>
+            <tr>
+              <th>File ID</th>
+              <th>Filename</th>
+              <th>Replicas Stored</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="filesBody">
+            <tr>
+              <td
+                colspan="4"
+                style="text-align: center; color: var(--text-muted)"
+              >
+                No files uploaded yet.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" id="previewCard" style="display: none">
+        <h2>Live Image Stream & Header Diagnostics</h2>
+        <p
+          id="routingInfo"
+          style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem"
+        ></p>
+        <p
+          id="detectionInfo"
+          style="
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+          "
+        ></p>
+        <img id="previewImg" class="img-preview" alt="Preview" />
+      </div>
+    </div>
+
+    <script>
+      // API Base configuration from Server #1
+      // const API_BASE = window.CENTRAL_API_URL || "http://localhost:8080";
+      // document.getElementById("apiBaseLabel").innerText = API_BASE;
+
+      // Auto Client Timezone Detection
+      // const userTimezone =
+      // Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Singapore";
+      // document.getElementById("clientTimezoneBadge").innerText = userTimezone;
+
+      async function fetchNodes() {
+        try {
+          const res = await fetch(`${API_BASE}/api/v1/nodes`);
+          const nodes = await res.json();
+          const container = document.getElementById("nodesContainer");
+          document.getElementById("nodeCount").innerText =
+            `${nodes.length} Nodes`;
+          if (!nodes || nodes.length === 0) {
+            container.innerHTML =
+              '<p style="color: var(--text-muted);">No storage nodes registered. Use on_board CLI to register.</p>';
+            return;
+          }
+          container.innerHTML = nodes
+            .map(
+              (n) => `
+                    <div class="node-item">
+                        <div>
+                            <div class="node-title">${n.node_id} (${n.region})</div>
+                            <div class="node-meta">SSH Port 22: ${n.ip} &bull; ${n.storage_path}</div>
+                        </div>
+                        <span class="badge" style="background: ${n.status === "active" ? "#dcfce7" : "#fee2e2"}; color: ${n.status === "active" ? "#15803d" : "#b91c1c"}">
+                            ${n.status}
+                        </span>
+                    </div>
+                `,
+            )
+            .join("");
+        } catch (err) {
+          document.getElementById("nodesContainer").innerHTML =
+            `<p style="color: #b91c1c;">Cannot reach Server #2 at ${API_BASE}. Ensure Central API is running.</p>`;
+        }
+      }
+
+      async function fetchFiles() {
+        try {
+          const res = await fetch(`${API_BASE}/api/v1/files`);
+          const files = await res.json();
+          const body = document.getElementById("filesBody");
+          if (!files || files.length === 0) {
+            body.innerHTML =
+              '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No files uploaded yet.</td></tr>';
+            return;
+          }
+          body.innerHTML = files
+            .map(
+              (f) => `
+                    <tr>
+                        <td><code>${f.id.substring(0, 8)}...</code></td>
+                        <td>${f.filename}</td>
+                        <td>${(f.replicas || []).map((r) => `<span class="badge" style="margin-right: 4px;">${r}</span>`).join("")}</td>
+                        <td>
+                            <button onclick="testDownload('${f.id}')" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Stream File</button>
+                        </td>
+                    </tr>
+                `,
+            )
+            .join("");
+        } catch (err) {
+          console.error("Failed to load files", err);
+        }
+      }
+
+      async function testDownload(fileId) {
+        const url = `${API_BASE}/files/${fileId}`;
+
+        const res = await fetch(url, {
+          headers: {
+            "X-Client-Timezone": userTimezone,
+          },
+        });
+
+        const servedBy = res.headers.get("X-Served-By-Node") || "Unknown Node";
+        const servedFrom =
+          res.headers.get("X-Served-From-Region") || "Unknown Region";
+        const method =
+          res.headers.get("X-Detection-Method") || "Automatic Detection";
+
+        const blob = await res.blob();
+        const objectUrl = URL.createObjectURL(blob);
+
+        document.getElementById("previewCard").style.display = "block";
+        document.getElementById("routingInfo").innerText =
+          `Nearest Node Selected: ${servedBy} (${servedFrom})`;
+        document.getElementById("detectionInfo").innerText =
+          `Detection Pipeline: ${method}`;
+        const img = document.getElementById("previewImg");
+        img.src = objectUrl;
+        img.style.display = "block";
+        document
+          .getElementById("previewCard")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fileInput = document.getElementById("imageFile");
+          if (!fileInput.files[0]) return;
+
+          const btn = document.getElementById("uploadBtn");
+          const alert = document.getElementById("uploadAlert");
+          btn.disabled = true;
+          btn.innerText = "Posting to Server #2 & Replicating...";
+          alert.style.display = "none";
+
+          const formData = new FormData();
+          formData.append("file", fileInput.files[0]);
+
+          try {
+            // Post to Server #2 (Central API)
+            const res = await fetch(`${API_BASE}/api/v1/upload`, {
+              method: "POST",
+              body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+              alert.className = "alert alert-success";
+              alert.innerText = `Uploaded to Server #2 and replicated across: ${(data.replicas || []).join(", ")}`;
+              alert.style.display = "block";
+              fileInput.value = "";
+              fetchFiles();
+            } else {
+              throw new Error(data.error || "Failed to upload");
+            }
+          } catch (err) {
+            alert.className = "alert alert-error";
+            alert.innerText = `Error contacting Server #2: ${err.message}`;
+            alert.style.display = "block";
+          } finally {
+            btn.disabled = false;
+            btn.innerText = "Upload to Server #2 (Fan-Out Replicate)";
+          }
+        });
+
+      fetchNodes();
+      fetchFiles();
+      setInterval(fetchNodes, 10000);
+    </script>
+  </body>
+</html>
