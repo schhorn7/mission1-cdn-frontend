@@ -352,10 +352,12 @@
       }
 
       async function fetchFiles() {
+        const apiBase = getApiBase();
+        const body = document.getElementById("filesBody");
         try {
-          const res = await fetch(`${API_BASE}/api/v1/files`);
+          const res = await fetch(`${apiBase}/api/v1/files`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const files = await res.json();
-          const body = document.getElementById("filesBody");
           if (!files || files.length === 0) {
             body.innerHTML =
               '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No files uploaded yet.</td></tr>';
@@ -369,7 +371,8 @@
                         <td>${f.filename}</td>
                         <td>${(f.replicas || []).map((r) => `<span class="badge" style="margin-right: 4px;">${r}</span>`).join("")}</td>
                         <td>
-                            <button onclick="testDownload('${f.id}')" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Get File</button>
+                            <button onclick="testDownload('${f.id}')" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; margin-right: 6px;">Get File</button>
+                            <button onclick="deleteFile('${f.id}', '${f.filename}')" style="padding: 0.35rem 0.65rem; font-size: 0.8rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Delete</button>
                         </td>
                     </tr>
                 `,
@@ -377,6 +380,38 @@
             .join("");
         } catch (err) {
           console.error("Failed to load files", err);
+        }
+      }
+
+      async function deleteFile(fileId, filename) {
+        if (
+          !confirm(
+            `Are you sure you want to delete "${filename}" across all storage nodes?`,
+          )
+        ) {
+          return;
+        }
+        const apiBase = getApiBase();
+        try {
+          const res = await fetch(`${apiBase}/api/v1/files/${fileId}`, {
+            method: "DELETE",
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.error || `HTTP ${res.status}`);
+          }
+          const nodesList =
+            (data.deleted_from_nodes || []).join(", ") || "cluster";
+          alert(
+            `File "${filename}" deleted successfully across cluster: ${nodesList}`,
+          );
+
+          const previewCard = document.getElementById("previewCard");
+          if (previewCard) previewCard.style.display = "none";
+
+          fetchFiles();
+        } catch (err) {
+          alert(`Failed to delete file: ${err.message}`);
         }
       }
 
